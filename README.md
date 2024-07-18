@@ -1,2 +1,0 @@
-# soundClassifier
-Nursing Sound classifier
