@@ -146,7 +146,7 @@ gymnasium==0.29.1
 gyp==0.1
 h11==0.14.0
 h5py==3.10.0
-HOS-client @ file:///home/server/HOS_client
+HOS-client @ https://pip.seonhunlee.me/simple
 html5lib==1.1
 htmlmin==0.1.12
 httpcore==1.0.5
