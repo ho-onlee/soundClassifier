@@ -4,7 +4,7 @@ import HOS_client
 import time, pickle, datetime
 import sounddevice as sd
 import numpy as np
-import toml
+import toml, os
 import keras
 import tensorflow as tf
 import librosa
@@ -52,8 +52,9 @@ def callback(indata, outdata, frames, time, status):
     print(f"[{t}] Prediction: {prediction}")
     with open(config['Output']['output_csv_fname']+'.tsv','a+', newline='') as f:
         f.write(f"{now}\t {prediction}\t {str(raw_pred)}\n")
-    ret = node.postMessage([str(t), str(raw_pred), str(prediction)])
-    print(ret)
+    if config['HOS_server']['HOS_available']:
+        ret = node.postMessage([str(t), str(raw_pred), str(prediction)])
+        print(ret)
 def main():
     try:
         with sd.Stream(device=(1, 0),
@@ -68,19 +69,19 @@ def main():
         print(e)
 
 
-
 if __name__ == '__main__':
     try:        
         config = toml.load('config.toml')
         anal = analyzer(config['Weights']['model_name'], 
                         label_name=config['Weights']['label_name'])
-        node = HOS_client.node(client=HOS_client.client(config['General']['device_name'], 
-                                            client_privilege=config['General']['client_privilege']),
-                               node_name=config['General']['node_name'], 
-                               keys=['recorded_time', 'prediction_raw', 'prediction_max'],
-                               host=config['HOS_server']['server_url'],
-                               port=config['HOS_server']['port']
-                              )
+        if config['HOS_server']['HOS_available']:
+            node = HOS_client.node(client=HOS_client.client(config['General']['device_name'], 
+                                                client_privilege=config['General']['client_privilege']),
+                                   node_name=config['General']['node_name'], 
+                                   keys=['recorded_time', 'prediction_raw', 'prediction_max'],
+                                   host=config['HOS_server']['server_url'],
+                                   port=config['HOS_server']['port']
+                                  )
         main()
     except Exception as e:
         print(e)
