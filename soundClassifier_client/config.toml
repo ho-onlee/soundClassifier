@@ -1,0 +1,11 @@
+[General]
+device_name = 'device2'
+client_privilege = 3
+
+[HOS_server]
+server_url = 'hos.seonhunlee.me'
+port =  5051
+
+[Weights]
+label_name='label_list.pkl'
+model_name='trained_model3.h5'
