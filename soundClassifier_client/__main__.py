@@ -9,9 +9,6 @@ import toml, os
 import keras
 import tensorflow as tf
 import librosa
-print("Fully loaded")
-print([f for f in os.listdir(os.path.dirname(__file__)) if '.h5' in f and '.weights.h5' not in f])
-print([f for f in os.listdir(os.path.dirname(__file__)) if '.weights.h5' in f])
 
 class analyzer:
     def __init__(self, model_name:str, label_name:str='label_list.pkl'):
@@ -52,7 +49,7 @@ def callback(indata, outdata, frames, time, status):
     now = datetime.datetime.now()
     t = str(now.strftime('%a, %d %b %Y %H:%M:%S:%f'))
     print(f"[{t}] Prediction: {prediction}")
-    with open(os.path.join(os.listdir(self.base_dir), config['Output']['output_csv_fname']+'.csv'),'a+', newline='') as f:
+    with open(os.path.join(os.listdir(anal.base_dir), config['Output']['output_csv_fname']+'.csv'),'a+', newline='') as f:
         f.write(f"{now}, {prediction}, {raw_pred}".replace('\n', '')+"\n")
     if config['HOS_server']['HOS_available']:
         ret = node.postMessage([str(t), str(raw_pred), str(prediction)])
