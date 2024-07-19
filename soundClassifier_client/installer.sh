@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
 
-if $(pwd)
+python3 -m venv .venv
+source $(pwd)/.venv/bin/activate
 
-mkdir soundClassifier
-cd soundClassifier
-git pull https://github.com/ho-onlee/soundClassifier.git
+pip install HOS-client -i https://pip.seonhunlee.me/simple
+pip install tensorflow librosa sounddevice toml
 
-pip install 
-set -e
-source $(pwd)/venv/bin/activate
-
-ipython nbconvert deviceCode.ipynb --to python
