@@ -13,3 +13,7 @@ source $(pwd)/.venv/bin/activate
 pip install HOS-client -i https://pip.seonhunlee.me/simple
 pip install tensorflow librosa sounddevice toml pyaudio
 
+git clone https://github.com/respeaker/seeed-voicecard
+cd seeed-voicecard
+sudo ./install.sh
+sudo reboot

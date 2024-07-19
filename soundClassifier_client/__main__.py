@@ -73,7 +73,6 @@ if __name__ == '__main__':
         config = toml.load(os.path.join(os. path.dirname(__file__), 'config.toml'))
         anal = analyzer(config['Weights']['model_name'], 
                         label_name=config['Weights']['label_name'])
-        print("pre hos")
         if config['HOS_server']['HOS_available']:
             node = HOS_client.node(client=HOS_client.client(config['General']['device_name'], 
                                                 client_privilege=config['General']['client_privilege']),
@@ -82,7 +81,6 @@ if __name__ == '__main__':
                                    host=config['HOS_server']['server_url'],
                                    port=config['HOS_server']['port']
                                   )
-        print("pre main")
         main()
     except Exception as e:
         print(e)
