@@ -15,7 +15,6 @@ class analyzer:
         self.base_dir = os.path.dirname(__file__)
         self.model = self.__load_model()
         self.map = self.__load_map(os.path.join(self.base_dir, label_name))
-        print("Analyser initialized")
         
     def __load_model(self):
         model = tf.keras.models.load_model(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.h5' in f and '.weights.h5' not in f][0]))
@@ -48,15 +47,28 @@ def callback(indata, outdata, frames, time, status):
     prediction = str(anal.map[np.argmax(raw_pred)])
     now = datetime.datetime.now()
     t = str(now.strftime('%a, %d %b %Y %H:%M:%S:%f'))
+    ref = 1 
+    
+    S = np.abs(librosa.stft(y=indata))
+    dbp = librosa.power_to_db(S**2, ref=ref).mean()
+
+    rms = librosa.feature.rms(y=indata)
+    dbs = librosa.amplitude_to_db(rms, ref=ref)
+    A_weighting = librosa.A_weighting(dbs)
+    dBA = librosa.amplitude_to_db(rms * A_weighting, ref=ref)[0][0][0]
+    
     print(f"[{t}] Prediction: {prediction}")
+    if config['Output']['output_csv_fname']+'.csv' not in os.listdir(anal.base_dir):
+        with open(os.path.join(anal.base_dir, config['Output']['output_csv_fname']+'.csv'),'w', newline='') as f:
+            f.write("Time, Prediction, raw_pred, dBFS[power], dBs, dBA".replace('\n', '')+"\n")
     with open(os.path.join(anal.base_dir, config['Output']['output_csv_fname']+'.csv'),'a+', newline='') as f:
-        f.write(f"{now}, {prediction}, {raw_pred}".replace('\n', '')+"\n")
+        f.write(f"{now}, {prediction}, {raw_pred}, {dbp}, {dbs.mean()}, {dBA}".replace('\n', '')+"\n")
     if config['HOS_server']['HOS_available']:
-        ret = node.postMessage([str(t), str(raw_pred), str(prediction)])
+        ret = node.postMessage([str(t), str(raw_pred), str(prediction), str(dbp), str(dbs.mean()), str(dBA)])
         print(ret)
 def main():
     try:
-        with sd.Stream(
+        with sd.Stream(device=(1, 0),
                     samplerate=48000, blocksize=int(48000*0.5),
                     channels=1, callback=callback) as f:
             print('#' * 80)
@@ -77,7 +89,7 @@ if __name__ == '__main__':
             node = HOS_client.node(client=HOS_client.client(config['General']['device_name'], 
                                                 client_privilege=config['General']['client_privilege']),
                                    node_name=config['General']['node_name'], 
-                                   keys=['recorded_time', 'prediction_raw', 'prediction_max'],
+                                   keys=['recorded_time', 'prediction_raw', 'prediction_max', 'dBFS_Power', 'dBs_Amp', 'dBA_Amp'],
                                    host=config['HOS_server']['server_url'],
                                    port=config['HOS_server']['port']
                                   )
