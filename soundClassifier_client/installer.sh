@@ -4,6 +4,8 @@ sudo apt-get install python3-pyaudio -y
 sudo apt-get install libasound-dev -y
 sudo apt install portaudio19-dev -y
 sudo apt-get install libasound2-dev -y
+sudo apt-get install libsndfile-dev -y
+
 
 python3 -m venv .venv
 source $(pwd)/.venv/bin/activate

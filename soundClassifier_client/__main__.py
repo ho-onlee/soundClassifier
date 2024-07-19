@@ -59,7 +59,7 @@ def callback(indata, outdata, frames, time, status):
         print(ret)
 def main():
     try:
-        with sd.Stream(device=config['General']['device_id'],
+        with sd.Stream(
                     samplerate=48000, blocksize=int(48000*0.5),
                     channels=1, callback=callback) as f:
             print('#' * 80)
