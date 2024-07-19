@@ -11,7 +11,7 @@ port =  5051
 
 [Weights]
 label_name='label_list.pkl'
-model_name='trained_model3.h5'
+model_name='trained_model.h5'
 
 [Output]
 output_csv_fname = 'device2_data'
