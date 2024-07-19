@@ -49,7 +49,7 @@ def callback(indata, outdata, frames, time, status):
     now = datetime.datetime.now()
     t = str(now.strftime('%a, %d %b %Y %H:%M:%S:%f'))
     print(f"[{t}] Prediction: {prediction}")
-    with open(os.path.join(os.listdir(anal.base_dir), config['Output']['output_csv_fname']+'.csv'),'a+', newline='') as f:
+    with open(os.path.join(anal.base_dir, config['Output']['output_csv_fname']+'.csv'),'a+', newline='') as f:
         f.write(f"{now}, {prediction}, {raw_pred}".replace('\n', '')+"\n")
     if config['HOS_server']['HOS_available']:
         ret = node.postMessage([str(t), str(raw_pred), str(prediction)])
