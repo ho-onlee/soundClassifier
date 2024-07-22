@@ -14,6 +14,7 @@ class analyzer:
     def __init__(self, model_name:str):
         self.base_dir = os.path.dirname(__file__)
         print(self.base_dir)
+        print(os.listdir(self.base_dir))
         self.model = self.__load_model()
         
     def __load_model(self):
