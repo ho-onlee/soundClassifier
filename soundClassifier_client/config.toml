@@ -3,7 +3,7 @@ device_name = 'device2'
 client_privilege = 3
 node_name='device2_last_test3'
 
-[Audio Setting]
+[Audio_Setting]
 device_id = '(0,0)'
 sample_rate = 48000
 duration = 0.5
