@@ -16,11 +16,11 @@ class analyzer:
         self.model = self.__load_model()
         
     def __load_model(self):
-        model, self.map = __load_model_ext(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.h5' in f and '.weights.h5' not in f][0]))
+        model, self.map = self.__load_model_ext(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.h5' in f and '.weights.h5' not in f][0]))
         model.load_weights(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.weights.h5' in f][0]))
         return model
         
-    def __load_model_ext(filepath, custom_objects=None):
+    def __load_model_ext(self, filepath, custom_objects=None):
         model = tf.keras.models.load_model(filepath, custom_objects=None)
         f = h5py.File(filepath, mode='r')
         meta_data = None
