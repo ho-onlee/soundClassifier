@@ -17,7 +17,55 @@ pip install tensorflow librosa sounddevice toml pyaudio
 git clone https://github.com/waveshare/WM8960-Audio-HAT
 cd WM8960-Audio-HAT
 sudo ./install.sh 
-# sudo rm -rf seeed-voicecard
-
 cd ..
+sudo rm -rf WM8960-Audio-HAT
+
+sudo rm config.toml
+echo '###########################'
+echo '#  Building Config file   #'
+echo '###########################'
+echo ''
+# Make Toml.config
+echo '[General]' 
+echo '[General]' >> config.toml
+echo "device_name = '$USER'" 
+echo "device_name = '$USER'" >> config.toml
+echo "client_privilege = 3"
+echo "client_privilege = 3" >> config.toml
+read -p "Enter a node_name: " node_name
+echo "node_name = '$node_name'" 
+echo "node_name = '$node_name'" >> config.toml
+echo ''
+echo "">> config.toml
+echo '[Audio_Setting]'
+echo '[Audio_Setting]' >> config.toml
+echo 'sample_rate = 48000'  
+echo 'sample_rate = 48000' >> config.toml
+echo 'duration = 0.5'  
+echo 'duration = 0.5' >> config.toml
+echo ''
+echo "">> config.toml
+echo '[HOS_server]' 
+echo '[HOS_server]' >> config.toml
+echo 'HOS_available=true' 
+echo 'HOS_available=true' >> config.toml
+echo "server_url = 'hos.seonhunlee.me'" 
+echo "server_url = 'hos.seonhunlee.me'" >> config.toml
+echo 'port =  5051'  
+echo 'port =  5051' >> config.toml
+echo ''
+echo "">> config.toml
+echo '[Weights]' >> config.toml
+echo "model_name='trained_model.h5'" >> config.toml
+echo '[Weights]'  
+echo "model_name='trained_model.h5'" 
+echo ''
+echo "">> config.toml
+echo '[Output]' >> config.toml
+echo '[Output]' 
+read -p "Enter a output_csv_fname: " output_csv_fname
+echo "node_name = '$output_csv_fname'"  
+echo "node_name = '$output_csv_fname'" >> config.toml
+echo '###################################################################'
+
 # sudo reboot
