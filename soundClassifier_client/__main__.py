@@ -11,10 +11,9 @@ import tensorflow as tf
 import librosa
 
 class analyzer:
-    def __init__(self, model_name:str, label_name:str='label_list.pkl'):
+    def __init__(self, model_name:str):
         self.base_dir = os.path.dirname(__file__)
         self.model = self.__load_model()
-        self.map = self.__load_map(os.path.join(self.base_dir, label_name))
         
     def __load_model(self):
         model, self.map = __load_model_ext(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.h5' in f and '.weights.h5' not in f][0]))
@@ -72,9 +71,9 @@ def callback(indata, outdata, frames, time, status):
         print(ret)
 def main():
     try:
-        with sd.Stream(device=config['Audio Setting']['device_id'],
-                    samplerate=config['Audio Setting']['sample_rate'], 
-                    blocksize=int(config['Audio Setting']['sample_rate']*config['Audio Setting']['duration']),
+        with sd.Stream(device=config['Audio_Setting']['device_id'],
+                    samplerate=config['Audio_Setting']['sample_rate'], 
+                    blocksize=int(config['Audio_Setting']['sample_rate']*config['Audio_Setting']['duration']),
                     channels=1, callback=callback) as f:
             print('#' * 80)
             print('press Return to quit')
@@ -88,8 +87,7 @@ def main():
 if __name__ == '__main__':
     try:        
         config = toml.load(os.path.join(os. path.dirname(__file__), 'config.toml'))
-        anal = analyzer(config['Weights']['model_name'], 
-                        label_name=config['Weights']['label_name'])
+        anal = analyzer(config['Weights']['model_name'])
         if config['HOS_server']['HOS_available']:
             node = HOS_client.node(client=HOS_client.client(config['General']['device_name'], 
                                                 client_privilege=config['General']['client_privilege']),
