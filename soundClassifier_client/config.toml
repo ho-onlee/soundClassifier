@@ -2,7 +2,11 @@
 device_name = 'device2'
 client_privilege = 3
 node_name='device2_last_test3'
+
+[Audio Setting]
 device_id = '(0,0)'
+sample_rate = 48000
+duration = 0.5
 
 [HOS_server]
 HOS_available=true
@@ -10,7 +14,6 @@ server_url = 'hos.seonhunlee.me'
 port =  5051
 
 [Weights]
-label_name='label_list.pkl'
 model_name='trained_model.h5'
 
 [Output]

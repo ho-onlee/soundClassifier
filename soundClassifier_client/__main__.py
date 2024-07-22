@@ -72,8 +72,9 @@ def callback(indata, outdata, frames, time, status):
         print(ret)
 def main():
     try:
-        with sd.Stream(device=(1, 0),
-                    samplerate=48000, blocksize=int(48000*0.5),
+        with sd.Stream(device=config['Audio Setting']['device_id'],
+                    samplerate=config['Audio Setting']['sample_rate'], 
+                    blocksize=int(config['Audio Setting']['sample_rate']*config['Audio Setting']['duration']),
                     channels=1, callback=callback) as f:
             print('#' * 80)
             print('press Return to quit')
