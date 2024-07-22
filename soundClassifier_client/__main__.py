@@ -13,8 +13,6 @@ import librosa, h5py
 class analyzer:
     def __init__(self, model_name:str):
         self.base_dir = os.path.dirname(__file__)
-        print(self.base_dir)
-        print(os.listdir(self.base_dir))
         self.model = self.__load_model()
         
     def __load_model(self):
@@ -73,8 +71,7 @@ def callback(indata, outdata, frames, time, status):
         print(ret)
 def main():
     try:
-        with sd.Stream(device=config['Audio_Setting']['device_id'],
-                    samplerate=config['Audio_Setting']['sample_rate'], 
+        with sd.Stream(samplerate=config['Audio_Setting']['sample_rate'], 
                     blocksize=int(config['Audio_Setting']['sample_rate']*config['Audio_Setting']['duration']),
                     channels=1, callback=callback) as f:
             print('#' * 80)
@@ -87,7 +84,7 @@ def main():
 
 
 if __name__ == '__main__':
-    # try:        
+    try:        
         config = toml.load(os.path.join(os. path.dirname(__file__), 'config.toml'))
         anal = analyzer(config['Weights']['model_name'])
         if config['HOS_server']['HOS_available']:
@@ -99,6 +96,6 @@ if __name__ == '__main__':
                                    port=config['HOS_server']['port']
                                   )
         main()
-    # except Exception as e:
-    #     print(e)
-    #     exit()
+    except Exception as e:
+        print(e)
+        exit()
