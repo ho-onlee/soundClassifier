@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+sudo apt-get update -y 
 sudo apt-get install python3-pyaudio -y
 sudo apt-get install libasound-dev -y
 sudo apt install portaudio19-dev -y
@@ -64,8 +64,8 @@ echo "">> config.toml
 echo '[Output]' >> config.toml
 echo '[Output]' 
 read -p "Enter a output_csv_fname: " output_csv_fname
-echo "node_name = '$output_csv_fname'"  
-echo "node_name = '$output_csv_fname'" >> config.toml
+echo "output_csv_fname = '$output_csv_fname'"  
+echo "output_csv_fname = '$output_csv_fname'" >> config.toml
 echo '###################################################################'
 
 # sudo reboot
