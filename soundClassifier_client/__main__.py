@@ -8,7 +8,7 @@ import numpy as np
 import toml, os
 import keras
 import tensorflow as tf
-import librosa
+import librosa, h5py
 
 class analyzer:
     def __init__(self, model_name:str):
@@ -85,7 +85,7 @@ def main():
 
 
 if __name__ == '__main__':
-    try:        
+    # try:        
         config = toml.load(os.path.join(os. path.dirname(__file__), 'config.toml'))
         anal = analyzer(config['Weights']['model_name'])
         if config['HOS_server']['HOS_available']:
@@ -97,6 +97,6 @@ if __name__ == '__main__':
                                    port=config['HOS_server']['port']
                                   )
         main()
-    except Exception as e:
-        print(e)
-        exit()
+    # except Exception as e:
+    #     print(e)
+    #     exit()
