@@ -17,14 +17,18 @@ class analyzer:
         self.map = self.__load_map(os.path.join(self.base_dir, label_name))
         
     def __load_model(self):
-        model = tf.keras.models.load_model(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.h5' in f and '.weights.h5' not in f][0]))
+        model, self.map = __load_model_ext(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.h5' in f and '.weights.h5' not in f][0]))
         model.load_weights(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.weights.h5' in f][0]))
         return model
-
-    def __load_map(self, fname:str):
-        with open(os.path.join(self.base_dir, fname), 'rb') as f:
-            ret = pickle.loads(f.read())
-        return ret
+        
+    def __load_model_ext(filepath, custom_objects=None):
+        model = tf.keras.models.load_model(filepath, custom_objects=None)
+        f = h5py.File(filepath, mode='r')
+        meta_data = None
+        if 'label_data' in f.attrs:
+            label_data = f.attrs.get('label_data')
+        f.close()
+        return model, label_data
         
     def predict(self, audiowave:np.array, sr:int=48000):
         prediction = np.zeros((1, len(self.map)))
