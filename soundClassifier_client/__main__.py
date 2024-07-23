@@ -81,10 +81,10 @@ def process(indata):
         print(ret)
         
 def callback(indata, outdata, frames, time, status):
-    if threading.active_count() < 10:
+    if threading.active_count() < 3:
         tr = threading.Thread(target=process, args=(indata,))
         tr.start()
-        print(f"{tr.getName()} Started; {threading.active_count()} alive")
+        print(f"{tr.getName()} Started; {threading.active_count()}/10 alive")
     
         
 def main():
