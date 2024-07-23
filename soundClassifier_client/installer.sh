@@ -39,10 +39,12 @@ echo ''
 echo "">> config.toml
 echo '[Audio_Setting]'
 echo '[Audio_Setting]' >> config.toml
-echo 'sample_rate = 48000'  
-echo 'sample_rate = 48000' >> config.toml
-echo 'duration = 0.5'  
-echo 'duration = 0.5' >> config.toml
+read -p "Enter a sample_rate: " sample_rate
+echo 'sample_rate =' $sample_rate  
+echo 'sample_rate =' $sample_rate >> config.toml
+read -p "Enter a duration: " duration
+echo 'duration = '$duration  
+echo 'duration = '$duration >> config.toml
 echo ''
 echo "">> config.toml
 echo '[HOS_server]' 
