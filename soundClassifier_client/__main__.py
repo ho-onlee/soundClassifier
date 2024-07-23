@@ -6,9 +6,16 @@ import time, pickle, datetime
 import sounddevice as sd
 import numpy as np
 import toml, os
-import keras
+import keras, threading
 import tensorflow as tf
 import librosa, h5py
+
+def threader(func):
+    def wrapper(*args, **kwargs):
+        tr = threading.Thread(target=func, args=args, kwargs=kwargs)
+        tr.start()
+        return tr
+    return wrapper
 
 class analyzer:
     def __init__(self, model_name:str):
@@ -45,7 +52,8 @@ class analyzer:
         return prediction.numpy()/c
 
 
-def callback(indata, outdata, frames, time, status):
+@threader
+def process(indata):
     raw_pred = anal.predict(indata)
     prediction = str(anal.map[np.argmax(raw_pred)])
     now = datetime.datetime.now()
@@ -69,6 +77,10 @@ def callback(indata, outdata, frames, time, status):
     if config['HOS_server']['HOS_available']:
         ret = node.postMessage([str(t), str(raw_pred), str(prediction), str(dbp), str(dbs.mean()), str(dBA)])
         print(ret)
+        
+def callback(indata, outdata, frames, time, status):
+    process(indata)
+        
 def main():
     try:
         with sd.Stream(samplerate=config['Audio_Setting']['sample_rate'], 
