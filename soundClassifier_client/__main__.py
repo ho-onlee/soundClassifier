@@ -53,13 +53,10 @@ class analyzer:
         input_data = np.reshape(mfcc_scaled, (1, 40))
         prediction += self.model(input_data)
         return prediction.numpy()
-tic = 0
-def tick():
-    tok = time.time()
-    print(f"T_delta: {tic-tok}")
-    tic = toc
+
 
 def process(indata):
+    tic = time.time()
     raw_pred = anal.predict2(indata, config['Audio_Setting']['sample_rate'])
     prediction = str(anal.map[np.argmax(raw_pred)])
     now = datetime.datetime.now()
@@ -83,7 +80,7 @@ def process(indata):
     if config['HOS_server']['HOS_available']:
         ret = node.postMessage([str(t), str(raw_pred), str(prediction), str(dbp), str(dbs.mean()), str(dBA)])
         print(ret)
-    tick()
+    print(f"Process {time.time()-tic}")
         
 def callback(indata, outdata, frames, time, status):
     if threading.active_count() < config['General']['max_thread']:
