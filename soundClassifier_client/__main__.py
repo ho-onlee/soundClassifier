@@ -81,7 +81,10 @@ def process(indata):
         print(ret)
         
 def callback(indata, outdata, frames, time, status):
-    threading.Thread(target=process, args=(indata,)).start()
+    tr = threading.Thread(target=process, args=(indata,))
+    tr.start()
+    print(f"Thread{tr.getName()} Started; {threading.active_count()} alive")
+    
         
 def main():
     try:
