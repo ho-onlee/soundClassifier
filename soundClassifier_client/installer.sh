@@ -35,6 +35,9 @@ echo "client_privilege = 3" >> config.toml
 read -p "Enter a node_name: " node_name
 echo "node_name = '$node_name'" 
 echo "node_name = '$node_name'" >> config.toml
+read -p "Enter max thread: " max_thread
+echo "max_thread = '$max_thread'" 
+echo "max_thread = '$max_thread'" >> config.toml
 echo ''
 echo "">> config.toml
 echo '[Audio_Setting]'
