@@ -52,7 +52,7 @@ class analyzer:
         mfcc_scaled = np.mean(mfccs.T, axis=2)
         input_data = np.reshape(mfcc_scaled, (1, 40))
         prediction += self.model(input_data)
-        return prediction.numpy()/c
+        return prediction.numpy()
 
 
 def process(indata):
