@@ -56,7 +56,7 @@ class analyzer:
 
 
 def process(indata):
-    raw_pred = anal.predict2(indata)
+    raw_pred = anal.predict2(indata, config['Audio_Setting']['sample_rate'])
     prediction = str(anal.map[np.argmax(raw_pred)])
     now = datetime.datetime.now()
     t = str(now.strftime('%a, %d %b %Y %H:%M:%S:%f'))
@@ -81,15 +81,16 @@ def process(indata):
         print(ret)
         
 def callback(indata, outdata, frames, time, status):
-    tr = threading.Thread(target=process, args=(indata,))
-    tr.start()
-    print(f"Thread{tr.getName()} Started; {threading.active_count()} alive")
+    if threading.active_count() < 10:
+        tr = threading.Thread(target=process, args=(indata,))
+        tr.start()
+        print(f"{tr.getName()} Started; {threading.active_count()} alive")
     
         
 def main():
     try:
         with sd.Stream(samplerate=config['Audio_Setting']['sample_rate'], 
-                    blocksize=int(config['Audio_Setting']['sample_rate']*config['Audio_Setting']['duration']),
+                    blocksize=int(config['Audio_Setting']['sample_rate'] * config['Audio_Setting']['duration']),
                     channels=1, callback=callback) as f:
             print('#' * 80)
             print('press Return to quit')
