@@ -10,12 +10,6 @@ import keras, threading
 import tensorflow as tf
 import librosa, h5py
 
-def threader(func):
-    def wrapper(*args, **kwargs):
-        tr = threading.Thread(target=func, args=args, kwargs=kwargs)
-        tr.start()
-        return tr
-    return wrapper
 
 class analyzer:
     def __init__(self, model_name:str):
@@ -36,7 +30,7 @@ class analyzer:
         f.close()
         return model, label_data
         
-    def predict(self, audiowave:np.array, sr:int=48000):
+    def predict(self, audiowave:np.array, sr:int=16000):
         prediction = np.zeros((1, len(self.map)))
         c = 0
         for i in range(int(np.floor(len(audiowave)/(0.45*sr)))+1):
@@ -50,11 +44,19 @@ class analyzer:
             input_data = np.reshape(mfcc_scaled, (1, 40))
             prediction += self.model(input_data)
         return prediction.numpy()/c
+        
+    def predict2(self, audiowave:np.array, sr:int=16000):
+        prediction = np.zeros((1, len(self.map)))
+        # Extract MFCC features
+        mfccs = librosa.feature.mfcc(y=audiowave, sr=sr, n_mfcc=40)
+        mfcc_scaled = np.mean(mfccs.T, axis=2)
+        input_data = np.reshape(mfcc_scaled, (1, 40))
+        prediction += self.model(input_data)
+        return prediction.numpy()/c
 
 
-@threader
 def process(indata):
-    raw_pred = anal.predict(indata)
+    raw_pred = anal.predict2(indata)
     prediction = str(anal.map[np.argmax(raw_pred)])
     now = datetime.datetime.now()
     t = str(now.strftime('%a, %d %b %Y %H:%M:%S:%f'))
@@ -79,7 +81,7 @@ def process(indata):
         print(ret)
         
 def callback(indata, outdata, frames, time, status):
-    process(indata)
+    threading.Thread(target=process, args=(indata,)).start()
         
 def main():
     try:
