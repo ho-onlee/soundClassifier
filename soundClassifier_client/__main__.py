@@ -10,6 +10,7 @@ import keras, threading
 import tensorflow as tf
 import librosa, h5py
 
+tick = 0
 
 class analyzer:
     def __init__(self, model_name:str):
@@ -80,7 +81,9 @@ def process(indata):
     if config['HOS_server']['HOS_available']:
         ret = node.postMessage([str(t), str(raw_pred), str(prediction), str(dbp), str(dbs.mean()), str(dBA)])
         print(ret)
-    print(f"Process {time.time()-tic}")
+    global tick
+    print(f"Process {time.time()-tic}, Global diff: {time.time() - tick} sec")
+    tick = time.time()
         
 def callback(indata, outdata, frames, time, status):
     if threading.active_count() < config['General']['max_thread']:
