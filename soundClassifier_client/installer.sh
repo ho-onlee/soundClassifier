@@ -21,57 +21,64 @@ sudo ./install.sh
 cd ..
 sudo rm -rf WM8960-Audio-HAT
 
-sudo rm config.toml
-echo '###########################'
-echo '#  Building Config file   #'
-echo '###########################'
-echo ''
-# Make Toml.config
-echo '[General]' 
-echo '[General]' >> config.toml
-echo "device_name = '$USER'" 
-echo "device_name = '$USER'" >> config.toml
-echo "client_privilege = 3"
-echo "client_privilege = 3" >> config.toml
-read -p "Enter a node_name: " node_name
-echo "node_name = '$node_name'" 
-echo "node_name = '$node_name'" >> config.toml
-read -p "Enter max thread: " max_thread
-echo "max_thread = '$max_thread'" 
-echo "max_thread = '$max_thread'" >> config.toml
-echo ''
-echo "">> config.toml
-echo '[Audio_Setting]'
-echo '[Audio_Setting]' >> config.toml
-read -p "Enter a sample_rate: " sample_rate
-echo 'sample_rate =' $sample_rate  
-echo 'sample_rate =' $sample_rate >> config.toml
-read -p "Enter a duration: " duration
-echo 'duration = '$duration  
-echo 'duration = '$duration >> config.toml
-echo ''
-echo "">> config.toml
-echo '[HOS_server]' 
-echo '[HOS_server]' >> config.toml
-echo 'HOS_available=true' 
-echo 'HOS_available=true' >> config.toml
-echo "server_url = 'hos.seonhunlee.me'" 
-echo "server_url = 'hos.seonhunlee.me'" >> config.toml
-echo 'port =  5051'  
-echo 'port =  5051' >> config.toml
-echo ''
-echo "">> config.toml
-echo '[Weights]' >> config.toml
-echo "model_name='trained_model.h5'" >> config.toml
-echo '[Weights]'  
-echo "model_name='trained_model.h5'" 
-echo ''
-echo "">> config.toml
-echo '[Output]' >> config.toml
-echo '[Output]' 
-read -p "Enter a output_csv_fname: " output_csv_fname
-echo "output_csv_fname = '$output_csv_fname'"  
-echo "output_csv_fname = '$output_csv_fname'" >> config.toml
+if [ -f $(pwd)/soundClassifier_client/config.toml ]; then
+  echo 'We have config file!'
+fi
+read -p "Do you want to build Config? (yN) :" yn
+    if $yn; then
+    
+    sudo rm config.toml
+    echo '###########################'
+    echo '#  Building Config file   #'
+    echo '###########################'
+    echo ''
+    # Make Toml.config
+    echo '[General]' 
+    echo '[General]' >> config.toml
+    echo "device_name = '$USER'" 
+    echo "device_name = '$USER'" >> config.toml
+    echo "client_privilege = 3"
+    echo "client_privilege = 3" >> config.toml
+    read -p "Enter a node_name: " node_name
+    echo "node_name = '$node_name'" 
+    echo "node_name = '$node_name'" >> config.toml
+    read -p "Enter max thread: " max_thread
+    echo "max_thread = '$max_thread'" 
+    echo "max_thread = '$max_thread'" >> config.toml
+    echo ''
+    echo "">> config.toml
+    echo '[Audio_Setting]'
+    echo '[Audio_Setting]' >> config.toml
+    read -p "Enter a sample_rate: " sample_rate
+    echo 'sample_rate =' $sample_rate  
+    echo 'sample_rate =' $sample_rate >> config.toml
+    read -p "Enter a duration: " duration
+    echo 'duration = '$duration  
+    echo 'duration = '$duration >> config.toml
+    echo ''
+    echo "">> config.toml
+    echo '[HOS_server]' 
+    echo '[HOS_server]' >> config.toml
+    echo 'HOS_available=true' 
+    echo 'HOS_available=true' >> config.toml
+    echo "server_url = 'hos.seonhunlee.me'" 
+    echo "server_url = 'hos.seonhunlee.me'" >> config.toml
+    echo 'port =  5051'  
+    echo 'port =  5051' >> config.toml
+    echo ''
+    echo "">> config.toml
+    echo '[Weights]' >> config.toml
+    echo "model_name='trained_model.h5'" >> config.toml
+    echo '[Weights]'  
+    echo "model_name='trained_model.h5'" 
+    echo ''
+    echo "">> config.toml
+    echo '[Output]' >> config.toml
+    echo '[Output]' 
+    read -p "Enter a output_csv_fname: " output_csv_fname
+    echo "output_csv_fname = '$output_csv_fname'"  
+    echo "output_csv_fname = '$output_csv_fname'" >> config.toml
+fi
 echo '###################################################################'
 
 # sudo reboot
