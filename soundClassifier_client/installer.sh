@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 sudo apt-get update -y 
+sudo apt install python3-dev -y
 sudo apt-get install python3-pyaudio -y
 sudo apt-get install libasound-dev -y
 sudo apt install portaudio19-dev -y
@@ -12,7 +13,7 @@ fi
 source $(pwd)/.venv/bin/activate
 
 pip install HOS-client -i https://pip.seonhunlee.me/simple
-pip install tensorflow librosa sounddevice toml pyaudio
+pip install tensorflow==2.16.1 librosa sounddevice toml pyaudio requests
 
 git clone https://github.com/waveshare/WM8960-Audio-HAT
 cd WM8960-Audio-HAT
