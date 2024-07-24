@@ -7,4 +7,4 @@ if $1; then
   bash installer.sh
   cd ..
 fi
-./soundClassifier_client/.venv/bin/python3 ./soundClassifier_client
+./soundClassifier_client/.venv/bin/python ./soundClassifier_client

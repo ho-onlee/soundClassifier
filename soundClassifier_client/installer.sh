@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 sudo apt-get update -y 
-sudo apt install python3-dev -y
 sudo apt-get install python3-pyaudio -y
 sudo apt-get install libasound-dev -y
 sudo apt install portaudio19-dev -y
@@ -25,8 +24,7 @@ if [ -f $(pwd)/soundClassifier_client/config.toml ]; then
   echo 'We have config file!'
 fi
 read -p "Do you want to build Config? (yN) :" yn
-    if $yn; then
-    
+if $yn; then    
     sudo rm config.toml
     echo '###########################'
     echo '#  Building Config file   #'

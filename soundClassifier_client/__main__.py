@@ -1,4 +1,4 @@
-#!/.venv/bin python
+#!.venv/bin python
 import warnings
 warnings.filterwarnings('ignore')
 import HOS_client
@@ -8,9 +8,10 @@ import numpy as np
 import toml, os
 import keras, threading
 import tensorflow as tf
-import librosa, h5py
+import librosa, h5py, faulthandler
 
 tick = 0
+# faulthandler.enable()
 
 class analyzer:
     def __init__(self, model_name:str):
@@ -28,7 +29,7 @@ class analyzer:
         meta_data = None
         if 'label_data' in f.attrs:
             label_data = f.attrs.get('label_data')
-        f.close()
+        f.close() 
         return model, label_data
         
     def predict(self, audiowave:np.array, sr:int=16000):
@@ -94,7 +95,8 @@ def callback(indata, outdata, frames, time, status):
         
 def main():
     try:
-        with sd.Stream(samplerate=config['Audio_Setting']['sample_rate'], 
+        with sd.Stream( 
+                    samplerate=config['Audio_Setting']['sample_rate'], 
                     blocksize=int(config['Audio_Setting']['sample_rate'] * config['Audio_Setting']['duration']),
                     channels=1, callback=callback) as f:
             print('#' * 80)
@@ -119,6 +121,7 @@ if __name__ == '__main__':
                                    port=config['HOS_server']['port']
                                   )
         main()
+        pass
     except Exception as e:
         print(e)
         exit()
