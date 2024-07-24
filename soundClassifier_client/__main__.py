@@ -95,14 +95,33 @@ def callback(indata, outdata, frames, time, status):
         
 def main():
     try:
-        with sd.Stream( 
-                    samplerate=config['Audio_Setting']['sample_rate'], 
-                    blocksize=int(config['Audio_Setting']['sample_rate'] * config['Audio_Setting']['duration']),
-                    channels=1, callback=callback) as f:
-            print('#' * 80)
-            print('press Return to quit')
-            print('#' * 80)
-            input()
+        if config['Audio_Setting']['device'] == 'none':
+            with sd.Stream( 
+                        samplerate=config['Audio_Setting']['sample_rate'], 
+                        blocksize=int(config['Audio_Setting']['sample_rate'] * config['Audio_Setting']['duration']),
+                        channels=1, callback=callback) as f:
+                print('#' * 80)
+                print('press Return to quit')
+                print('#' * 80)
+                input()
+        else:
+            with sd.Stream( device = config['Audio_Setting']['device'],
+                        samplerate=config['Audio_Setting']['sample_rate'], 
+                        blocksize=int(config['Audio_Setting']['sample_rate'] * config['Audio_Setting']['duration']),
+                        channels=1, callback=callback) as f:
+                print('#' * 80)
+                print('press Return to quit')
+                print('#' * 80)
+                input()
+            
+            with sd.Stream( 
+                        samplerate=config['Audio_Setting']['sample_rate'], 
+                        blocksize=int(config['Audio_Setting']['sample_rate'] * config['Audio_Setting']['duration']),
+                        channels=1, callback=callback) as f:
+                print('#' * 80)
+                print('press Return to quit')
+                print('#' * 80)
+                input()
             
     except Exception as e:
         print(e)

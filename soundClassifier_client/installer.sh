@@ -12,7 +12,8 @@ fi
 source $(pwd)/.venv/bin/activate
 
 pip install HOS-client -i https://pip.seonhunlee.me/simple
-pip install tensorflow==2.16.1 librosa sounddevice toml pyaudio requests
+pip install tensorflow==2.16.1 
+pip install librosa sounddevice toml pyaudio requests
 
 git clone https://github.com/waveshare/WM8960-Audio-HAT
 cd WM8960-Audio-HAT
@@ -41,12 +42,17 @@ if $yn; then
     echo "node_name = '$node_name'" 
     echo "node_name = '$node_name'" >> config.toml
     read -p "Enter max thread: " max_thread
-    echo "max_thread = '$max_thread'" 
-    echo "max_thread = '$max_thread'" >> config.toml
+    echo "max_thread = "$max_thread
+    echo "max_thread = "$max_thread >> config.toml
     echo ''
     echo "">> config.toml
     echo '[Audio_Setting]'
     echo '[Audio_Setting]' >> config.toml
+    arecord -l
+    read -p "Enter a device (n, n) or none : " device
+    echo "device = '$device'" 
+    echo "device = '$device'" >> config.toml
+    
     read -p "Enter a sample_rate: " sample_rate
     echo 'sample_rate =' $sample_rate  
     echo 'sample_rate =' $sample_rate >> config.toml
