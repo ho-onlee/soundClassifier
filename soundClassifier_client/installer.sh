@@ -25,7 +25,7 @@ if [ -f $(pwd)/soundClassifier_client/config.toml ]; then
   echo 'We have config file!'
 fi
 read -p "Do you want to build Config? (yN) :" yn
-if $yn=='y'; then    
+if [[ "$yn" =~ ^([yY][eE][sS]|[yY])$ ]]; then    
     sudo rm config.toml
     echo '###########################'
     echo '#  Building Config file   #'
