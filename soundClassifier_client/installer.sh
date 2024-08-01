@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+read -p "Do you want to Start Installation? Config? (yN) :" yn
+if [[ "$yn" =~ ^([yY][eE][sS]|[yY])$ ]]; then    
+
 sudo apt-get update -y 
 sudo apt-get install python3-pyaudio -y
 sudo apt-get install libasound-dev -y
@@ -20,6 +24,7 @@ cd WM8960-Audio-HAT
 sudo ./install.sh 
 cd ..
 sudo rm -rf WM8960-Audio-HAT
+fi
 
 if [ -f $(pwd)/soundClassifier_client/config.toml ]; then
   echo 'We have config file!'
