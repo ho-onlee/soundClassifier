@@ -133,6 +133,7 @@ def main():
 
 if __name__ == '__main__':
     try:        
+        print(librosa.query_devices())
         config = toml.load(os.path.join(os. path.dirname(__file__), 'config.toml'))
         anal = analyzer(config['Weights']['model_name'])
         if config['HOS_server']['HOS_available']:
