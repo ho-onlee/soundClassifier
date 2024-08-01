@@ -48,12 +48,16 @@ class analyzer:
         return prediction.numpy()/c
         
     def predict2(self, audiowave:np.array, sr:int=16000):
+        tic = time.time()
         prediction = np.zeros((1, len(self.map)))
         # Extract MFCC features
         mfccs = librosa.feature.mfcc(y=audiowave, sr=sr, n_mfcc=40)
+        print(f"MFCC conversion: {time.time()-tic}sec")
         mfcc_scaled = np.mean(mfccs.T, axis=2)
         input_data = np.reshape(mfcc_scaled, (1, 40))
+        print(f"input data preparation: {time.time()-tic}sec")
         prediction += self.model(input_data)
+        print(f"Model Prediction: {time.time()-tic}sec")
         return prediction.numpy()
 
 

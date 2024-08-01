@@ -49,7 +49,7 @@ if [[ "$yn" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo '[Audio_Setting]'
     echo '[Audio_Setting]' >> config.toml
     arecord -l
-    read -p "Enter a device (n, n) or none : " device
+    read -p "Enter a device 0 or none : l" device
     echo "device = '$device'" 
     echo "device = '$device'" >> config.toml
     
