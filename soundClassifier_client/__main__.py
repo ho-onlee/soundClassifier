@@ -13,10 +13,14 @@ from librosa.feature import mfcc
 import numba
 from numba import jit
 
-tick = 0
+from numba import int32, float32    # import the types
+from numba.experimental import jitclass
+
 # faulthandler.enable()
 
-class analyzer:
+
+@jitclass()
+class analyzer(object):
     def __init__(self, model_name:str):
         self.base_dir = os.path.dirname(__file__)
         self.model = self.__load_model()
