@@ -82,6 +82,13 @@ def process(indata):
     dBA = librosa.amplitude_to_db(rms * A_weighting, ref=ref)[0][0][0]
     
     print(f"[{t}] Prediction: {prediction}")
+    writeCSV(now, prediction, raw_pred, dbp, dBA)
+    global tick
+    print(f"Process {time.time()-tic}, Global diff: {time.time() - tick} sec")
+    tick = time.time()
+
+
+def writeCSV(now, prediction, raw_pred, dbp, dBA):
     if config['Output']['output_csv_fname']+'.csv' not in os.listdir(anal.base_dir):
         with open(os.path.join(anal.base_dir, config['Output']['output_csv_fname']+'.csv'),'w', newline='') as f:
             f.write("Time, Prediction, raw_pred, dBFS[power], dBs, dBA".replace('\n', '')+"\n")
@@ -90,9 +97,6 @@ def process(indata):
     if config['HOS_server']['HOS_available']:
         ret = node.postMessage([str(t), str(raw_pred), str(prediction), str(dbp), str(dbs.mean()), str(dBA)])
         print(ret)
-    global tick
-    print(f"Process {time.time()-tic}, Global diff: {time.time() - tick} sec")
-    tick = time.time()
         
 def callback(indata, outdata, frames, time, status):
     if config['General']['multi-threading']:
