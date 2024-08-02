@@ -76,7 +76,7 @@ def process(indata):
     dBA = librosa.amplitude_to_db(rms * A_weighting, ref=ref)[0][0][0]
     
     print(f"[{t}] Prediction: {prediction}")
-    writeCSV(t,dbs, now, prediction, raw_pred, dbp, dBA)
+    # writeCSV(t,dbs, now, prediction, raw_pred, dbp, dBA)
 
 
 def writeCSV(t,dbs, now, prediction, raw_pred, dbp, dBA):
