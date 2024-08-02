@@ -17,9 +17,12 @@ from numba import int32, float32    # import the types
 from numba.experimental import jitclass
 
 # faulthandler.enable()
+spec = [
+    ('model_name', int32),               # a simple scalar field
+    ('array', float32[:]),          # an array field
+]
 
-
-@jitclass()
+@jitclass(spec)
 class analyzer(object):
     def __init__(self, model_name:str):
         self.base_dir = os.path.dirname(__file__)
@@ -30,7 +33,7 @@ class analyzer(object):
         model.load_weights(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.weights.h5' in f][0]))
         return model
         
-    def __load_model_ext(self, filepath, custom_objects=None):
+    def __load_model_ext(self, filepath:str, custom_objects=None):
         model = tf.keras.models.load_model(filepath, custom_objects=None)
         f = h5py.File(filepath, mode='r')
         meta_data = None
