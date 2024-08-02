@@ -91,10 +91,13 @@ def process(indata):
     tick = time.time()
         
 def callback(indata, outdata, frames, time, status):
-    if threading.active_count() < config['General']['max_thread']:
-        tr = threading.Thread(target=process, args=(indata,))
-        tr.start()
-        print(f"{tr.getName()} Started; {threading.active_count()}/{config['General']['max_thread']} alive")
+    if config['General']['multi-threading']:
+        if threading.active_count() < config['General']['max_thread']:
+            tr = threading.Thread(target=process, args=(indata,))
+            tr.start()
+            print(f"{tr.getName()} Started; {threading.active_count()}/{config['General']['max_thread']} alive")
+    else:
+        process(indata)
     
         
 def main():
