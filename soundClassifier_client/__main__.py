@@ -47,7 +47,6 @@ class analyzer(object):
             prediction += self.model(input_data)
         return prediction.numpy()/c
 
-    @jit(parallel=True)
     def predict2(self, audiowave:np.array, sr:int=16000):
         tic = time.time()
         prediction = np.zeros((1, len(self.map)))
@@ -61,7 +60,6 @@ class analyzer(object):
         print(f"Model Prediction: {time.time()-tic}sec")
         return prediction.numpy()
 
-@jit(parallel=True, nopython=True)
 def process(indata):
     raw_pred = anal.predict2(indata, config['Audio_Setting']['sample_rate'])
     prediction = str(anal.map[np.argmax(raw_pred)])
@@ -78,10 +76,10 @@ def process(indata):
     dBA = librosa.amplitude_to_db(rms * A_weighting, ref=ref)[0][0][0]
     
     print(f"[{t}] Prediction: {prediction}")
-    writeCSV(now, prediction, raw_pred, dbp, dBA)
+    writeCSV(t,dbs, now, prediction, raw_pred, dbp, dBA)
 
 
-def writeCSV(now, prediction, raw_pred, dbp, dBA):
+def writeCSV(t,dbs, now, prediction, raw_pred, dbp, dBA):
     if config['Output']['output_csv_fname']+'.csv' not in os.listdir(anal.base_dir):
         with open(os.path.join(anal.base_dir, config['Output']['output_csv_fname']+'.csv'),'w', newline='') as f:
             f.write("Time, Prediction, raw_pred, dBFS[power], dBs, dBA".replace('\n', '')+"\n")
