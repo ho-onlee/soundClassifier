@@ -10,6 +10,8 @@ import keras, threading
 import tensorflow as tf
 import librosa, h5py, faulthandler
 from librosa.feature import mfcc
+import numba
+from numba import jit
 
 tick = 0
 # faulthandler.enable()
@@ -47,7 +49,8 @@ class analyzer:
             input_data = np.reshape(mfcc_scaled, (1, 40))
             prediction += self.model(input_data)
         return prediction.numpy()/c
-        
+
+    @jit(parallel=True, nopython=True)
     def predict2(self, audiowave:np.array, sr:int=16000):
         tic = time.time()
         prediction = np.zeros((1, len(self.map)))
@@ -61,7 +64,7 @@ class analyzer:
         print(f"Model Prediction: {time.time()-tic}sec")
         return prediction.numpy()
 
-
+@jit(parallel=True, nopython=True)
 def process(indata):
     tic = time.time()
     raw_pred = anal.predict2(indata, config['Audio_Setting']['sample_rate'])
