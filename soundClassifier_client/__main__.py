@@ -66,7 +66,6 @@ class analyzer:
 
 @jit(parallel=True, nopython=True)
 def process(indata):
-    tic = time.time()
     raw_pred = anal.predict2(indata, config['Audio_Setting']['sample_rate'])
     prediction = str(anal.map[np.argmax(raw_pred)])
     now = datetime.datetime.now()
@@ -83,9 +82,6 @@ def process(indata):
     
     print(f"[{t}] Prediction: {prediction}")
     writeCSV(now, prediction, raw_pred, dbp, dBA)
-    global tick
-    print(f"Process {time.time()-tic}, Global diff: {time.time() - tick} sec")
-    tick = time.time()
 
 
 def writeCSV(now, prediction, raw_pred, dbp, dBA):
