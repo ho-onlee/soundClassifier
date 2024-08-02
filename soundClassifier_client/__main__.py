@@ -13,16 +13,6 @@ from librosa.feature import mfcc
 import numba
 from numba import jit
 
-from numba import int32, float32    # import the types
-from numba.experimental import jitclass
-
-# faulthandler.enable()
-spec = [
-    ('model_name', int32),               # a simple scalar field
-    ('array', float32[:]),          # an array field
-]
-
-@jitclass(spec)
 class analyzer(object):
     def __init__(self, model_name:str):
         self.base_dir = os.path.dirname(__file__)
@@ -57,7 +47,7 @@ class analyzer(object):
             prediction += self.model(input_data)
         return prediction.numpy()/c
 
-    @jit(parallel=True, nopython=True)
+    @jit(parallel=True)
     def predict2(self, audiowave:np.array, sr:int=16000):
         tic = time.time()
         prediction = np.zeros((1, len(self.map)))
