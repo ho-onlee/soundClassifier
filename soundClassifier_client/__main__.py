@@ -9,6 +9,7 @@ import toml, os
 import keras, threading
 import tensorflow as tf
 import librosa, h5py, faulthandler
+from librosa.feature import mfcc
 
 tick = 0
 # faulthandler.enable()
@@ -51,7 +52,7 @@ class analyzer:
         tic = time.time()
         prediction = np.zeros((1, len(self.map)))
         # Extract MFCC features
-        mfccs = librosa.feature.mfcc(y=audiowave, sr=sr, n_mfcc=40)
+        mfccs = mfcc(y=audiowave, sr=sr, n_mfcc=40)
         print(f"MFCC conversion: {time.time()-tic}sec")
         mfcc_scaled = np.mean(mfccs.T, axis=2)
         input_data = np.reshape(mfcc_scaled, (1, 40))
