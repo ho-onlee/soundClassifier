@@ -5,7 +5,7 @@ __pycache__/
 *$py.class
 
 
-soundClassifier/*.tflite
+soundClassifier/*.h5
 soundClassifier/*.npy
 soundClassifier/dataset
 
