@@ -1,15 +1,19 @@
 import sounddevice as sd
 import numpy as np
-import librosa
+import librosa, os
 import tensorflow as tf
 import threading  # Import threading module
+import os
+os.chdir(os.path.dirname(__file__))  # Change working directory to the directory of this file
 
 class AudioAnalyzer:
-    def __init__(self, samplerate=16000, duration=5):
-        self.samplerate = samplerate
+    def __init__(self, duration=5):
+        self.samplerate = 16000
         self.duration = duration
         self.audio_data = []
         self.lock = threading.Lock()  # Create a lock for thread safety
+        with open('../soundClassifier/labels.txt', 'r') as file:
+            self.labels = [line.strip() for line in file.readlines()]
 
     def callback(self, indata, frames, time, status):
         if status:
@@ -28,16 +32,16 @@ class AudioAnalyzer:
             # Start the audio stream in a separate thread
             threading.Thread(target=self.audio_stream, daemon=True).start()
             while True:  # Main thread can perform other tasks
-                print(np.array(self.audio_data).shape)
                 threading.Thread(target=self.process_audio).start()  # Start get_mfcc in a new thread
                 sd.sleep(self.duration * 1000)  # Sleep to control the frequency of MFCC processing
         except KeyboardInterrupt:
             print("Streaming stopped by user.")
-            
+
     def process_audio(self):
         mfcc = self.get_mfcc()
-        if mfcc:
-            self.predict_labels(mfcc, model_path='../soundClassifier/model.tflite')
+        if mfcc is not None:
+            ret = self.labels[self.predict_labels(mfcc, model_path='../soundClassifier/model.tflite')]
+            print(f"I hear {ret}")
 
     def get_mfcc(self):
         with self.lock:  # Lock access to audio_data
