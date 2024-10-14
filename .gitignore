@@ -4,10 +4,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-soundClassifier/
-*.tflite
-*.npy
-dataset
+
+soundClassifier/*.tflite
+soundClassifier/*.npy
+soundClassifier/dataset
 
 
 # C extensions
