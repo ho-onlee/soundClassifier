@@ -5,6 +5,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+soundClassifier/
+*.tflite
+*.npy
+dataset
+
+
 # C extensions
 *.so
 
