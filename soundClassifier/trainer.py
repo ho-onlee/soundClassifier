@@ -10,12 +10,29 @@ from scp import SCPClient
 import matplotlib.pyplot as plt
 from urllib.parse import unquote
 from tqdm import tqdm
-import h5py
+import h5py, requests
 from keras.utils import to_categorical
 from keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
 # os.chdir(r'C:\Users\Hoon\Nextcloud3\Projects\SoundTesting')
 
+def grabAPI():
+    token = '03b886f9c8850386fb40064cea4042474b7ce2b0'
+    project_id = '1'  # Replace with the actual project ID
+    url = f'https://label.seonhunlee.me/api/projects/{project_id}/export?exportType=JSON&download_all_tasks=true'
+    headers = {
+        'Authorization': f'Token {token}'
+    }
+    response = requests.get(url, headers =headers, verify=True)  # Set verify=False to ignore SSL warnings
+
+    if response.status_code == 200:
+        with open('exported_data.json', 'w', encoding='utf-8') as json_file:
+            json_file.write(response.text)
+        print("Data exported successfully.")
+        return True
+    else:
+        print(f"Failed to export data. Status code: {response.status_code}")
+        return False
 
 
 def grabAudio(filename:str)->bool:
@@ -53,10 +70,11 @@ def split_dataset(dataset, chunk_size=32000*3):
     return split_data
 
 
-def prepare_data(json_file_path:str):
+def prepare_data():
+    if not grabAPI(): raise("Not able to retrieve JSON")
     if not os.path.exists('dataset'): os.mkdir('dataset')
     if os.path.exists('split_dataset.npy'): return np.load('split_dataset.npy', allow_pickle=True).item()
-    with open(json_file_path, 'r', encoding='utf-8') as json_file:  # Specify encoding
+    with open('exported_data.json', 'r', encoding='utf-8') as json_file:  # Specify encoding
         js = json.load(json_file)  # Load the JSON data
     dataset = dict()
     for entry in tqdm(js, total=len(js)):
@@ -69,6 +87,7 @@ def prepare_data(json_file_path:str):
             for label, start, end in annotations:
                 if label == 'alarm': continue
                 if label == 'siren': continue
+                if label == 'Rolling Cart': continue
                 if label in ['ICU Medical', 'Baxter', 'Alaris']: label = 'Hospital Devices'
                 if label not in dataset.keys(): dataset[label] = []
                 start = int(start*sample_rate)

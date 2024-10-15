@@ -12,8 +12,16 @@ class AudioAnalyzer:
         self.duration = duration
         self.audio_data = []
         self.lock = threading.Lock()  # Create a lock for thread safety
+        self.audio_waveform = None
+        self.prep_NN()
         with open('../soundClassifier/labels.txt', 'r') as file:
             self.labels = [line.strip() for line in file.readlines()]
+    def prep_NN(self):
+        model_path='../soundClassifier/model.tflite'
+        self.interpreter = tf.lite.Interpreter(model_path=model_path)
+        self.interpreter.allocate_tensors()
+        self.input_details = self.interpreter.get_input_details()
+        self.output_details = self.interpreter.get_output_details()
 
     def callback(self, indata, frames, time, status):
         if status:
@@ -37,35 +45,43 @@ class AudioAnalyzer:
         except KeyboardInterrupt:
             print("Streaming stopped by user.")
 
-    def process_audio(self):
-        mfcc = self.get_mfcc()
-        if mfcc is not None:
-            ret = self.labels[self.predict_labels(mfcc, model_path='../soundClassifier/model.tflite')]
-            print(f"I hear {ret}")
-
-    def get_mfcc(self):
+    def process_audio(self):        
         with self.lock:  # Lock access to audio_data
             if self.audio_data:  # Check if there is audio data to process
-                audio_waveform = np.concatenate(self.audio_data.copy()).flatten()
+                self.audio_waveform = np.concatenate(self.audio_data.copy()).flatten()
                 self.audio_data = []  # Clear audio_data after processing
-            else:
-                return None
+        if self.audio_waveform is not None:
+            db = self.calculate_decibel(self.audio_waveform)
+            mfcc = self.get_mfcc(self.audio_waveform)
+            if mfcc is not None:
+                output_data = np.mean([self.predict_labels(mf) for mf in mfcc], axis=1)[0]
+                print(f"{output_data=}")
+                predicted_classes_tflite = np.argmax(output_data)
+                print(f"{predicted_classes_tflite=}")
+                predicted_classes_tflite = predicted_classes_tflite[output_data.max() > 0.5]
+                print(f"{predicted_classes_tflite=}")
+                ret = [self.labels[i] for i in predicted_classes_tflite]
+                print(f"I hear {ret} at {round(db, 4)}db")
+
+    def calculate_decibel(self, audio_waveform):
+        rms = np.sqrt(np.mean(np.square(audio_waveform)))
+        if rms > 0:
+            decibels = 20 * np.log10(rms)
+        else:
+            decibels = -np.inf 
+        return decibels
+    
+    def get_mfcc(self, audio_waveform):
         mfccs = librosa.feature.mfcc(y=audio_waveform, sr=self.samplerate, n_mfcc=40)
-        mfccs_scaled = np.mean(mfccs.T, axis=0)
-        print("MFCCs computed.")  # Indicate that MFCCs have been computed
-        return mfccs_scaled
+        # mfccs = np.mean(mfccs.T, axis=0)
+        return mfccs.T
             
-    def predict_labels(self, x_test, model_path='model.tflite'):
-        interpreter = tf.lite.Interpreter(model_path=model_path)
-        interpreter.allocate_tensors()
-        input_details = interpreter.get_input_details()
-        output_details = interpreter.get_output_details()
+    def predict_labels(self, x_test):
         x_test_input = np.array([x_test.reshape(1, len(x_test), 1)], dtype=np.float32)
-        interpreter.set_tensor(input_details[0]['index'], x_test_input[0])
-        interpreter.invoke()
-        output_data = interpreter.get_tensor(output_details[0]['index'])
-        predicted_classes_tflite = np.argmax(output_data, axis=1)[0]        
-        return predicted_classes_tflite
+        self.interpreter.set_tensor(self.input_details[0]['index'], x_test_input[0])
+        self.interpreter.invoke()
+        output_data = self.interpreter.get_tensor(self.output_details[0]['index'])  
+        return output_data
 
 if __name__ == "__main__":
     analyzer = AudioAnalyzer()

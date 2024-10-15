@@ -8,6 +8,8 @@ __pycache__/
 soundClassifier/*.h5
 soundClassifier/*.npy
 soundClassifier/dataset
+soundClassifier/.json
+soundClassifier/.txt
 
 
 # C extensions
