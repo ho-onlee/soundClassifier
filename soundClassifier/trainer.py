@@ -40,7 +40,7 @@ def grabAudio(filename:str)->bool:
     target_d = os.path.join(os.getcwd(), 'dataset')
     if os.path.exists(os.path.join(target_d, filename)): 
         return os.path.join(target_d, filename)
-    print(f"Retrieving File: {origin_d} -> {target_d}")
+    # print(f"Retrieving File: {origin_d} -> {target_d}")
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     client.load_system_host_keys()
@@ -85,10 +85,10 @@ def prepare_data():
             path = grabAudio(filename)
             audio_waveform, sample_rate = librosa.load(path, sr=32000)
             for label, start, end in annotations:
-                if label == 'alarm': continue
-                if label == 'siren': continue
-                if label == 'Rolling Cart': continue
-                if label in ['ICU Medical', 'Baxter', 'Alaris']: label = 'Hospital Devices'
+                if label == 'Composition': continue
+                if label == 'Rolling Carts': label = 'HVAC'
+                if label == 'Sink/Water': label = 'medical air valve'
+                if label in ['ICU Medical', 'Baxter', 'Alaris', 'alarm', 'siren']: label = 'Hospital Devices'
                 if label not in dataset.keys(): dataset[label] = []
                 start = int(start*sample_rate)
                 end = int(end*sample_rate)
@@ -110,7 +110,7 @@ def get_mfcc(splited_dataset):
     if os.path.exists('mfcc_features.npy'): return np.load('mfcc_features.npy', allow_pickle=True).item()
     mfcc_features = dict()
     
-    for label, audio_chunks in splited_dataset.items():
+    for label, audio_chunks in tqdm(splited_dataset.items(), total=len(splited_dataset)):
         mfcc_features[label] = []
         for audio_waveform in audio_chunks:
             # Extract MFCC features
