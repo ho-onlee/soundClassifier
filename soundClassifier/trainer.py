@@ -88,7 +88,7 @@ def prepare_data():
                 if label == 'Composition': continue
                 if label == 'Rolling Carts': label = 'HVAC'
                 if label == 'Sink/Water': label = 'medical air valve'
-                if label in ['ICU Medical', 'Baxter', 'Alaris', 'alarm', 'siren']: label = 'Hospital Devices'
+                if label in ['ICU Medical', 'Baxter', 'Alaris', 'alarm', 'siren', 'SpaceLAbs']: label = 'Hospital Devices'
                 if label not in dataset.keys(): dataset[label] = []
                 start = int(start*sample_rate)
                 end = int(end*sample_rate)
@@ -176,17 +176,17 @@ def build_model(x_train, x_test, y_train, y_test):
     input_shape = (x_train.shape[1], 1)
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Input(shape=input_shape))
+    model.add(tf.keras.layers.Conv1D(32, 3, padding='same', activation='relu'))
+    model.add(tf.keras.layers.MaxPooling1D(pool_size=2))
+    model.add(tf.keras.layers.Dense(32, activation='relu', input_shape=input_shape))
+    model.add(tf.keras.layers.Dropout(0.25))
     model.add(tf.keras.layers.Conv1D(64, 3, padding='same', activation='relu'))
     model.add(tf.keras.layers.MaxPooling1D(pool_size=2))
-    model.add(tf.keras.layers.Dense(64, activation='relu', input_shape=input_shape))
-    model.add(tf.keras.layers.Dropout(0.25))
-    model.add(tf.keras.layers.Conv1D(128, 3, padding='same', activation='relu'))
-    model.add(tf.keras.layers.MaxPooling1D(pool_size=2))
-    model.add(tf.keras.layers.Dense(128, activation='relu'))
+    model.add(tf.keras.layers.Dense(64, activation='relu'))
     model.add(tf.keras.layers.Dropout(0.25))
     model.add(tf.keras.layers.MaxPooling1D(pool_size=2))
     model.add(tf.keras.layers.Flatten())
-    model.add(tf.keras.layers.Dense(512, activation='relu'))
+    model.add(tf.keras.layers.Dense(256, activation='relu'))
     model.add(tf.keras.layers.Dropout(0.5))
     model.add(tf.keras.layers.Dense(len(y_train[0]), activation='softmax'))
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -219,7 +219,7 @@ def save_model_ext(model, filepath, overwrite=True, meta_data=None):
         f.close()
 
 def main():
-    splited_dataset = prepare_data('project-1-at-2024-10-07-14-12-077a1aee.json')    
+    splited_dataset = prepare_data()    
     mfcc_features = get_mfcc(splited_dataset)
     x_train, x_test, y_train, y_test, label = split_data(mfcc_features)
     model = build_model(x_train, x_test, y_train, y_test)

@@ -10,7 +10,7 @@ os.chdir(os.path.dirname(__file__))  # Change working directory to the directory
 #
 class AudioAnalyzer:
     def __init__(self, duration=3):
-        self.samplerate = 32000
+        self.samplerate = 16000
         self.duration = duration
         self.audio_data = []
         self.lock = threading.Lock()  # Create a lock for thread safety
@@ -64,12 +64,11 @@ class AudioAnalyzer:
             if mfcc is not None:
                 output_data = np.mean([self.predict_labels(mf) for mf in mfcc], axis=1)[0]
                 ret = [(i, value) for i, value in enumerate(output_data) if value > 0.5]
-                ret = ", ".join([f"{self.labels[t]}({q})" for t, q in ret ])
-                print(f"I hear {ret} at {round(db, 4)}db")
-                
-                if not os.path.exists('dataset'):
-                    os.makedirs('dataset')
-                sf.write(f'dataset/{ret}.wav', self.audio_waveform, self.samplerate)
+                ret_text = ", ".join([f"{self.labels[t]}({q})" for t, q in ret ])
+                return dict(audio_waveform = self.audio_waveform, samplerate = self.samplerate, prediction=ret, prediction_text=ret_text, fsdb=db) 
+                # if not os.path.exists('dataset'):
+                #     os.makedirs('dataset')
+                # sf.write(f'dataset/{ret}.wav', self.audio_waveform, self.samplerate)
 
     def calculate_decibel(self, audio_waveform:list)-> float:
         """Calculates the decibel level of the given audio waveform."""
