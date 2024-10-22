@@ -58,8 +58,9 @@ def check_file(filename:str):
     return os.path.exists(target_d)
 
 
-def split_dataset(dataset, chunk_size=32000*3):
+def split_dataset(dataset):
     """Split the dataset into chunks of specified size."""
+    chunk_size=32000*1
     hop_size = chunk_size // 2  # Define hop size (e.g., half of chunk_size)
     split_data = {}
     for label, audio_waveform in dataset.items():
@@ -86,6 +87,7 @@ def prepare_data():
             audio_waveform, sample_rate = librosa.load(path, sr=32000)
             for label, start, end in annotations:
                 if label == 'Composition': continue
+                if label == 'drawers': 'Cabinet'
                 if label == 'Rolling Carts': label = 'HVAC'
                 if label == 'Sink/Water': label = 'medical air valve'
                 if label in ['ICU Medical', 'Baxter', 'Alaris', 'alarm', 'siren', 'SpaceLAbs']: label = 'Hospital Devices'
@@ -94,6 +96,8 @@ def prepare_data():
                 end = int(end*sample_rate)
                 if end-start < 32000:
                     np.pad(audio_waveform, (0, 32000), 'constant')
+
+
                 dataset[label] += list(audio_waveform[start:end])
         except Exception as e:
             print(filename)
@@ -102,6 +106,16 @@ def prepare_data():
             print(exc_type, fname, exc_tb.tb_lineno)
             print(e)
             continue
+    speech_dataset_path = os.path.join(os.getcwd(), 'speech_dataset')
+    for root, _, files in os.walk(speech_dataset_path):
+        for file in files[:100]:
+            if file.endswith('.flac'):  # Assuming the audio files are in .wav format
+                label = 'Speech'  # Label for the audio files
+                path = os.path.join(root, file)
+                audio_waveform, sample_rate = librosa.load(path, sr=32000)
+                if label not in dataset.keys():
+                    dataset[label] = []
+                dataset[label] += list(audio_waveform)
     splited_dataset = split_dataset(dataset)
     np.save('split_dataset.npy', splited_dataset)
     return np.load('split_dataset.npy', allow_pickle=True).item()
@@ -110,7 +124,7 @@ def get_mfcc(splited_dataset):
     if os.path.exists('mfcc_features.npy'): return np.load('mfcc_features.npy', allow_pickle=True).item()
     mfcc_features = dict()
     
-    for label, audio_chunks in tqdm(splited_dataset.items(), total=len(splited_dataset)):
+    for label, audio_chunks in tqdm(splited_dataset.items(), total=len(splited_dataset), desc='get_mfcc'):
         mfcc_features[label] = []
         for audio_waveform in audio_chunks:
             # Extract MFCC features
