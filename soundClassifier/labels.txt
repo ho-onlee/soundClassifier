@@ -1,0 +1,15 @@
+Hospital Devices
+objects clanging (metal)
+Pneumatic Tube
+Room Call
+HVAC
+Manual Resuscitation Bag
+objects clanging (non-metal)
+curtains
+drawers
+Speech
+medical air valve
+velcro (BP cuff)
+footsteps
+Lifts
+Cabinet
