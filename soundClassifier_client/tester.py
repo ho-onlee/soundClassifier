@@ -1,4 +1,4 @@
-from executer import *
+from executer_indi import *
 import os
 import urllib.parse
 import librosa
@@ -51,4 +51,4 @@ if __name__ == "__main__":
         
     plt.tight_layout()
     plt.show()
-    
+

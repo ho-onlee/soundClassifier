@@ -19,7 +19,7 @@ from sklearn.model_selection import train_test_split
 def grabAPI():
     token = '03b886f9c8850386fb40064cea4042474b7ce2b0'
     project_id = '1'  # Replace with the actual project ID
-    url = f'https://label.seonhunlee.me/api/projects/{project_id}/export?exportType=JSON&download_all_tasks=true'
+    url = f'http://192.168.2.5:8080/api/projects/{project_id}/export?exportType=JSON&download_all_tasks=true'
     headers = {
         'Authorization': f'Token {token}'
     }
@@ -44,7 +44,7 @@ def grabAudio(filename:str)->bool:
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     client.load_system_host_keys()
-    client.connect('192.168.2.9', username='worker', password='worker')
+    client.connect('192.168.2.5', username='worker', password='worker')
 
     scp = SCPClient(client.get_transport())
     scp.get(origin_d, target_d)    
@@ -58,9 +58,8 @@ def check_file(filename:str):
     return os.path.exists(target_d)
 
 
-def split_dataset(dataset):
+def split_dataset(dataset, chunk_size=32000*1):
     """Split the dataset into chunks of specified size."""
-    chunk_size=32000*1
     hop_size = chunk_size // 2  # Define hop size (e.g., half of chunk_size)
     split_data = {}
     for label, audio_waveform in dataset.items():
@@ -96,8 +95,6 @@ def prepare_data():
                 end = int(end*sample_rate)
                 if end-start < 32000:
                     np.pad(audio_waveform, (0, 32000), 'constant')
-
-
                 dataset[label] += list(audio_waveform[start:end])
         except Exception as e:
             print(filename)
@@ -176,13 +173,14 @@ def evaluate(model, x_test, y_test, label):
     print(report)
 
     # Plot a few test samples and their predicted labels
-    num_samples = 5
+    num_samples = len(true_classes)
     plt.figure(figsize=(15, 5))
-    for i in range(num_samples):
-        plt.subplot(1, num_samples, i + 1)
-        plt.plot(x_test[i])
-        plt.title(f'Predicted: {label[predicted_classes[i]]}')
-        plt.axis('off')
+    # for i in range(num_samples):
+    #     plt.subplot(1, num_samples, i + 1)
+    #     plt.plot(x_test[i])
+    plt.bar(range(num_samples), true_classes, color='blue', alpha=0.5)
+    plt.title(f'Predicted: {label[predicted_classes[i]]}')
+    plt.axis('off')
     plt.show()
 
 
@@ -209,11 +207,11 @@ def build_model(x_train, x_test, y_train, y_test):
     return model
 
 def train(model,x_train, x_test, y_train, y_test ):
-    callback = EarlyStopping(patience=4, min_delta=1e-3, monitor='accuracy')
+    callback = EarlyStopping(patience=5, min_delta=1e-4, monitor='accuracy')
     history1 = model.fit(x_train, 
             y_train, 
             batch_size=8,
-            epochs=100, 
+            epochs=100000, 
             validation_data=(x_test, y_test), 
             verbose=1, 
             callbacks=[callback,]
