@@ -6,6 +6,9 @@ __pycache__/
 
 soundClassifier_client/dataset
 soundClassifier_client/speech_dataset
+soundClassifier_client/out
+soundClassifier_client/*.wav
+soundClassifier_client/*.mp4
 soundClassifier/model.tf
 soundClassifier/speech_dataset
 soundClassifier/indv_model
