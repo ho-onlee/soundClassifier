@@ -13,7 +13,9 @@ soundClassifier/model.tf
 soundClassifier/speech_dataset
 soundClassifier/indv_model
 soundClassifier/*.h5
+soundClassifier/out
 soundClassifier/*.png
+soundClassifier/*.mp4
 soundClassifier/*.npy
 soundClassifier/dataset
 soundClassifier/.json
