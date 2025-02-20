@@ -19,9 +19,18 @@ class analyzer(object):
         self.model = self.__load_model()
         
     def __load_model(self):
-        model, self.map = self.__load_model_ext(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.h5' in f and '.weights.h5' not in f][0]))
-        model.load_weights(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.weights.h5' in f][0]))
-        return model
+        tflite_model_path = os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.tflite' in f][0])
+        if os.path.exists(tflite_model_path):
+            interpreter = tf.lite.Interpreter(model_path=tflite_model_path)
+            interpreter.allocate_tensors()
+            self.interpreter = interpreter
+            self.input_details = interpreter.get_input_details()
+            self.output_details = interpreter.get_output_details()
+            return interpreter
+        elif os.path.exists(os.path.join(self.base_dir, 'model.h5')) and os.path.exists(os.path.join(self.base_dir, 'model.weights.h5')):
+            model, self.map = self.__load_model_ext(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.h5' in f and '.weights.h5' not in f][0]))
+            model.load_weights(os.path.join(self.base_dir, [f for f in os.listdir(self.base_dir) if '.weights.h5' in f][0]))
+            return model
         
     def __load_model_ext(self, filepath:str, custom_objects=None):
         model = tf.keras.models.load_model(filepath, custom_objects=None)
