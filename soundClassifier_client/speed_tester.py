@@ -76,9 +76,7 @@ def audio_streamer(chunks, duration, sample_rate):
 if __name__ == "__main__":
     duration = 1
     analyzer = AudioAnalyzer()
-    model_path = pathlib.Path("../soundClassifier/model.tflite")
-    labels_path = pathlib.Path("../soundClassifier/labels.txt")
-    analyzer.load_model(model_path=model_path, labels_path=labels_path)
+    analyzer.load_model(model_path="../soundClassifier/model.tflite", labels_path="../soundClassifier/labels.txt")
     audio_path = "example.mp3"
     audio_data, sample_rate = librosa.load(audio_path, sr=32000)
     
