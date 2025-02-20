@@ -79,7 +79,7 @@ if __name__ == "__main__":
     model_path = pathlib.Path("../soundClassifier/model.tflite")
     labels_path = pathlib.Path("../soundClassifier/labels.txt")
     analyzer.load_model(model_path=model_path, labels_path=labels_path)
-    audio_path = "out/output_audio.mp3"
+    audio_path = "example.mp3"
     audio_data, sample_rate = librosa.load(audio_path, sr=32000)
     
     chunk_size = sample_rate * duration
