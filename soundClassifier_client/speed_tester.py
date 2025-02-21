@@ -92,5 +92,9 @@ if __name__ == "__main__":
     while True: 
         if analyzer.audio_queue.empty():
             break
+    with open("processing_time.csv", 'w') as f:
+        f.write("Processing Time\n")
+        for t in analyzer.processingTime:
+            f.write(f"{t}\n")
     print(f"Processing time: {np.mean(analyzer.processingTime)} : {np.std(analyzer.processingTime)}")
 
