@@ -5,6 +5,7 @@ import sounddevice as sd
 import numpy as np
 import queue, pathlib
 import socket
+import argparse
 
 class tfModel:
     def __init__(self, model_path:str, labels_path:str=None):
@@ -95,7 +96,15 @@ def audio_streamer(chunks, duration, sample_rate):
 if __name__ == "__main__":
     duration = 1
     analyzer = AudioAnalyzer()
-    analyzer.load_model('keras', model_path="../soundClassifier/my_model.keras", labels_path="../soundClassifier/labels.txt")
+    parser = argparse.ArgumentParser(description='Audio processing with model type')
+    parser.add_argument('--model_type', type=str, required=True, choices=['keras', 'tflite'], help='Type of model to use (keras or tflite)')
+    args = parser.parse_args()
+
+    model_type = args.model_type
+    if model_type == "tflite":
+        analyzer.load_model('tflite', model_path="../soundClassifier/model.tflite", labels_path="../soundClassifier/labels.txt")
+    elif model_type == "keras":
+        analyzer.load_model('keras', model_path="../soundClassifier/my_model.keras", labels_path="../soundClassifier/labels.txt")
     audio_path = "example.mp3"
     audio_data, sample_rate = librosa.load(audio_path, sr=32000)
     
@@ -115,5 +124,5 @@ if __name__ == "__main__":
         f.write("Processing Time\n")
         for t in analyzer.processingTime:
             f.write(f"{t}\n")
-    print(f"Processing time: {np.mean(analyzer.processingTime)} : {np.std(analyzer.processingTime)}")
+    print(f"Processing time: {np.mean(analyzer.processingTime[:-2])} : {np.std(analyzer.processingTime)}")
 
