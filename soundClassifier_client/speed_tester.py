@@ -94,6 +94,7 @@ def audio_streamer(chunks, duration, sample_rate):
 
 if __name__ == "__main__":
     duration = 1
+
     analyzer = AudioAnalyzer()
     analyzer.load_model('keras', model_path="../soundClassifier/my_model.keras", labels_path="../soundClassifier/labels.txt")
     audio_path = "example.mp3"
