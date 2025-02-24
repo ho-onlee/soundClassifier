@@ -6,6 +6,8 @@ import numpy as np
 import queue, pathlib
 import socket
 import argparse
+import os
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 class tfModel:
     def __init__(self, model_path:str, labels_path:str=None):
@@ -98,6 +100,7 @@ if __name__ == "__main__":
     analyzer = AudioAnalyzer()
     parser = argparse.ArgumentParser(description='Audio processing with model type')
     parser.add_argument('--model_type', type=str, required=True, choices=['keras', 'tflite'], help='Type of model to use (keras or tflite)')
+    parser.add_argument('--duration', type=int, default=1, help='Duration of each audio chunk in seconds')
     args = parser.parse_args()
 
     model_type = args.model_type
@@ -124,5 +127,5 @@ if __name__ == "__main__":
         f.write("Processing Time\n")
         for t in analyzer.processingTime:
             f.write(f"{t}\n")
-    print(f"Processing time: {np.mean(analyzer.processingTime[:-2])} : {np.std(analyzer.processingTime)}")
+    print(f"Processing time: {np.mean(analyzer.processingTime)} : {np.std(analyzer.processingTime)}")
 
