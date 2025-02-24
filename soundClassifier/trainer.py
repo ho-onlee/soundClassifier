@@ -207,12 +207,13 @@ def build_model(x_train, x_test, y_train, y_test):
     return model
 
 def train(model,x_train, x_test, y_train, y_test ):
-    pathname = os.path.dirname("checkPoints/cp-{epoch:04d}.ckpt")
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=pathname,
+    pathname = os.path.dirname("checkPoints")
+    print(os.path.join(pathname, "/cp-{epoch:04d}.weights.h5"))
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(os.path.join(pathname, "/cp-{epoch:04d}.weights.h5"),
                                                  save_weights_only=True,
                                                  verbose=1)
     callback = EarlyStopping(patience=5, min_delta=1e-4, monitor='accuracy')
-    model.save_weights(pathname.format(epoch=0))
+    model.save_weights(os.path.join(pathname, "/cp-{epoch:04d}.weights.h5").format(epoch=0))
     history1 = model.fit(x_train, 
             y_train, 
             batch_size=8,
