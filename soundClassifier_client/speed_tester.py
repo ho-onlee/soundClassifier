@@ -52,7 +52,7 @@ class AudioAnalyzer:
         if modelType == "tflite":
             self.model = tfModel(model_path, labels_path)
         elif modelType == "keras":
-            self.model = tf.keras.models.load_model(model_path, labels_path)
+            self.model = keras(model_path, labels_path)
 
     def process_audio(self, audio_data, sample_rate):
         def audio_to_mfcc(audio_data, sample_rate):
@@ -69,8 +69,8 @@ class AudioAnalyzer:
         # print(f"Prediction: {prediction['refined']} with {prediction['confidance']*100}% confidence")
 
     def streamCallback(self, indata, frames, time, status):
-        if status:
-            print(status, file=sys.stderr)
+        # if status:
+            # print(status, file=sys.stderr)
         # print(f"queue size: {self.audio_queue.qsize()}")
         self.audio_queue.put(indata.copy())
 
@@ -94,7 +94,6 @@ def audio_streamer(chunks, duration, sample_rate):
 
 if __name__ == "__main__":
     duration = 1
-
     analyzer = AudioAnalyzer()
     analyzer.load_model('keras', model_path="../soundClassifier/my_model.keras", labels_path="../soundClassifier/labels.txt")
     audio_path = "example.mp3"
