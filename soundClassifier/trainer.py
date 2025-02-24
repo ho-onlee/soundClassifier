@@ -207,14 +207,19 @@ def build_model(x_train, x_test, y_train, y_test):
     return model
 
 def train(model,x_train, x_test, y_train, y_test ):
+    pathname = os.path.dirname("checkPoints/cp-{epoch:04d}.ckpt")
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=pathname,
+                                                 save_weights_only=True,
+                                                 verbose=1)
     callback = EarlyStopping(patience=5, min_delta=1e-4, monitor='accuracy')
+    model.save_weights(pathname.format(epoch=0))
     history1 = model.fit(x_train, 
             y_train, 
             batch_size=8,
             epochs=100000, 
             validation_data=(x_test, y_test), 
             verbose=1, 
-            callbacks=[callback,]
+            callbacks=[callback,cp_callback]
             )
     # fig=plt.figure(figsize=(12,4))
     plt.plot(history1.epoch, history1.history['loss'], label="Dense")

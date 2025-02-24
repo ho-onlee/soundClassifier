@@ -4,6 +4,7 @@ import librosa, threading, time
 import sounddevice as sd
 import numpy as np
 import queue, pathlib
+import socket
 
 class tfModel:
     def __init__(self, model_path:str, labels_path:str=None):
@@ -25,6 +26,21 @@ class tfModel:
         res = dict(out=output_data, refined=self.labels[best_output], confidance=confidance)
         return res
 
+class keras:
+    def __init__(self, model_path:str, labels_path:str=None):
+        self.model = tf.keras.models.load_model(model_path)
+        self.labels = None
+        if labels_path is not None:
+            with open(labels_path, 'r') as f:
+                self.labels = [line.strip() for line in f.readlines()]
+    
+    def predict(self, mfcc_data):
+        output_data = self.model.predict(mfcc_data)
+        best_output = np.argmax(output_data[0])
+        confidance = output_data[0][best_output]
+        res = dict(out=output_data, refined=self.labels[best_output], confidance=confidance)
+        return res
+
 class AudioAnalyzer:
     def __init__(self, audio_path:str=None):
         self.audio_queue = queue.Queue()
@@ -32,8 +48,11 @@ class AudioAnalyzer:
         self.processingTime = []
         self.enable_thread = False
 
-    def load_model(self, model_path:str=None, labels_path:str=None):
-        self.model = tfModel(model_path, labels_path)
+    def load_model(self, modelType:str='tflite', model_path:str=None, labels_path:str=None):
+        if modelType == "tflite":
+            self.model = tfModel(model_path, labels_path)
+        elif modelType == "keras":
+            self.model = tf.keras.models.load_model(model_path, labels_path)
 
     def process_audio(self, audio_data, sample_rate):
         def audio_to_mfcc(audio_data, sample_rate):
@@ -76,7 +95,7 @@ def audio_streamer(chunks, duration, sample_rate):
 if __name__ == "__main__":
     duration = 1
     analyzer = AudioAnalyzer()
-    analyzer.load_model(model_path="../soundClassifier/model.tflite", labels_path="../soundClassifier/labels.txt")
+    analyzer.load_model('keras', model_path="../soundClassifier/my_model.keras", labels_path="../soundClassifier/labels.txt")
     audio_path = "example.mp3"
     audio_data, sample_rate = librosa.load(audio_path, sr=32000)
     
@@ -92,7 +111,7 @@ if __name__ == "__main__":
     while True: 
         if analyzer.audio_queue.empty():
             break
-    with open("processing_time.csv", 'w') as f:
+    with open(f"processing_time_{socket.gethostname()}.csv", 'w') as f:
         f.write("Processing Time\n")
         for t in analyzer.processingTime:
             f.write(f"{t}\n")
