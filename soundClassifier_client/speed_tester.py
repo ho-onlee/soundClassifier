@@ -6,12 +6,26 @@ import numpy as np
 import queue, pathlib
 import socket
 import argparse
+import platform
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+EDGETPU_SHARED_LIB = {
+  'Linux': 'libedgetpu.so.1',
+  'Darwin': 'libedgetpu.1.dylib',
+  'Windows': 'edgetpu.dll'
+}[platform.system()]
 
 class tfModel:
     def __init__(self, model_path:str, labels_path:str=None):
-        self.interpreter = tf.lite.Interpreter(model_path=model_path)
+        try:
+            delegate = tf.lite.experimental.load_delegate('EDGETPU_SHARED_LIB')
+        except ValueError:
+            delegate = None
+        
+        if delegate:
+            self.interpreter = tf.lite.Interpreter(model_path=model_path, experimental_delegates=[delegate])
+        else:
+            self.interpreter = tf.lite.Interpreter(model_path=model_path)
         self.interpreter.allocate_tensors()
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
