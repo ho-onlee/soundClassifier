@@ -18,7 +18,7 @@ EDGETPU_SHARED_LIB = {
 class tfModel:
     def __init__(self, model_path:str, labels_path:str=None):
         try:
-            delegate = tf.lite.experimental.load_delegate('EDGETPU_SHARED_LIB')
+            delegate = tf.lite.experimental.load_delegate(EDGETPU_SHARED_LIB)
         except ValueError:
             delegate = None
         
