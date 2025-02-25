@@ -23,8 +23,10 @@ class tfModel:
             delegate = None
         
         if delegate:
+            print(f"Using EdgeTPU delegate: {EDGETPU_SHARED_LIB}")
             self.interpreter = tf.lite.Interpreter(model_path=model_path, experimental_delegates=[delegate])
         else:
+            print("Using CPU delegate")
             self.interpreter = tf.lite.Interpreter(model_path=model_path)
         self.interpreter.allocate_tensors()
         self.input_details = self.interpreter.get_input_details()
