@@ -89,7 +89,7 @@ class AudioAnalyzer:
         prediction = self.model.predict(input_data)
         tok = time.time()
         print(f"\tProcessing Time: {tok-tic}sec")
-        self.processingTime.append(",".join([tic, tac, tok, tac-tic, tok-tac, tok-tic]))
+        self.processingTime.append(",".join(map(str, [tic, tac, tok, tac-tic, tok-tac, tok-tic])))
         # print(f"Prediction: {prediction['refined']} with {prediction['confidance']*100}% confidence")
 
     def streamCallback(self, indata, frames, time, status):
