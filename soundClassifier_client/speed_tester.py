@@ -79,11 +79,16 @@ class AudioAnalyzer:
             return mfccs
         # Extract MFCC features
         tic = time.time()
+        print(f"Process starts")
         mfccs = audio_to_mfcc(audio_data, sample_rate)
+        tac = time.time()   
+        print(f"\tMFCC conversion: {tac-tic}sec")
         mfcc_scaled = np.mean(mfccs.T, axis=2)
         input_data = np.reshape(mfcc_scaled, (1, 40, 1))
+        print(f"\tinput data preparation: {time.time()-tac}sec")
         prediction = self.model.predict(input_data)
         tok = time.time()
+        print(f"\tProcessing Time: {tok-tic}sec")
         self.processingTime.append(tok-tic)
         # print(f"Prediction: {prediction['refined']} with {prediction['confidance']*100}% confidence")
 
