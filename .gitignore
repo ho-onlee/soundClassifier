@@ -24,6 +24,7 @@ soundClassifier/.txt
 
 # C extensions
 *.so
+*.csv
 
 # Distribution / packaging
 .Python
