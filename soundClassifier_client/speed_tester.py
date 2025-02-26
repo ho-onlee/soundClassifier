@@ -76,10 +76,8 @@ class AudioAnalyzer:
 
     def process_audio(self, audio_data, sample_rate):
         def audio_to_mfcc(audio_data, sample_rate):
-            mfccs = librosa.feature.mfcc(y=audio_data, sr=sample_rate, n_mfcc=40)
+            mfccs = librosa.feature.mfcc(y=audio_data, sr=sample_rate, n_mfcc=40, n_fft=512, center=True)
             print(mfccs.shape)
-            # mfccs = psf.mfcc(audio_data, samplerate=sample_rate, numcep=40)
-            # print(mfccs.shape)
             return mfccs
         # Extract MFCC features
         tic = time.time()
@@ -87,19 +85,16 @@ class AudioAnalyzer:
         mfccs = audio_to_mfcc(audio_data, sample_rate)
         tac = time.time()   
         print(f"\tMFCC conversion: {tac-tic}sec")
-        mfcc_scaled = np.mean(mfccs, axis=2)
+        mfcc_scaled = np.mean(mfccs.T, axis=2)
+        print(mfcc_scaled.shape)
         input_data = np.reshape(mfcc_scaled, (1, 40, 1))
         print(f"\tinput data preparation: {time.time()-tac}sec")
         prediction = self.model.predict(input_data)
         tok = time.time()
         print(f"\tProcessing Time: {tok-tic}sec")
         self.processingTime.append([tic, tac, tok, tac-tic, tok-tac, tok-tic])
-        # print(f"Prediction: {prediction['refined']} with {prediction['confidance']*100}% confidence")
 
     def streamCallback(self, indata, frames, time, status):
-        # if status:
-            # print(status, file=sys.stderr)
-        # print(f"queue size: {self.audio_queue.qsize()}")
         self.audio_queue.put(indata.copy())
 
     
@@ -121,7 +116,7 @@ def audio_streamer(chunks, duration, sample_rate):
         time.sleep(duration)
 
 if __name__ == "__main__":
-    duration = 1
+    duration = 3
     analyzer = AudioAnalyzer()
     parser = argparse.ArgumentParser(description='Audio processing with model type')
     parser.add_argument('--model_type', type=str, required=True, choices=['keras', 'tflite'], help='Type of model to use (keras or tflite)')
@@ -134,7 +129,7 @@ if __name__ == "__main__":
     elif model_type == "keras":
         analyzer.load_model('keras', model_path="../soundClassifier/my_model.keras", labels_path="../soundClassifier/labels.txt")
     audio_path = "example.mp3"
-    audio_data, sample_rate = librosa.load(audio_path, sr=32000)
+    audio_data, sample_rate = librosa.load(audio_path, sr=24000)
     
     chunk_size = sample_rate * duration
     chunks = np.array_split(np.reshape(audio_data, (len(audio_data),1)), len(audio_data) // chunk_size)
