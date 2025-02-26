@@ -1,5 +1,6 @@
 import os
 import csv
+import numpy as np
 import argparse
 # Parse argument for path input
 parser = argparse.ArgumentParser(description='Process CSV file path.')
@@ -38,7 +39,6 @@ for row in data_as_list:
     total_processing_time.append( float(row[-1]))
 
 print(f"Total processing time: {sum(total_processing_time)}s")
-print(f"Average processing time: {sum(total_processing_time)/len(total_processing_time)}s")
-
-print(f"Average MFCC conversion time: {sum(mfcc_conversion_time)/len(mfcc_conversion_time)}s")  
-print(f"Average prediction_time time: {sum(prediction_time)/len(prediction_time)}s")
+print(f"Average processing time: {sum(total_processing_time)/len(total_processing_time)}s, std: {np.std(total_processing_time)}")
+print(f"Average MFCC conversion time: {sum(mfcc_conversion_time)/len(mfcc_conversion_time)}s, std: {np.std(mfcc_conversion_time)}")
+print(f"Average prediction_time time: {sum(prediction_time)/len(prediction_time)}s, std: {np.std(prediction_time)}")
