@@ -6,6 +6,7 @@ import numpy as np
 import queue, pathlib
 import socket
 import argparse
+import python_speech_features as psf
 import platform
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
@@ -76,6 +77,9 @@ class AudioAnalyzer:
     def process_audio(self, audio_data, sample_rate):
         def audio_to_mfcc(audio_data, sample_rate):
             mfccs = librosa.feature.mfcc(y=audio_data, sr=sample_rate, n_mfcc=40)
+            print(mfccs.shape)
+            # mfccs = psf.mfcc(audio_data, samplerate=sample_rate, numcep=40)
+            # print(mfccs.shape)
             return mfccs
         # Extract MFCC features
         tic = time.time()
@@ -83,13 +87,13 @@ class AudioAnalyzer:
         mfccs = audio_to_mfcc(audio_data, sample_rate)
         tac = time.time()   
         print(f"\tMFCC conversion: {tac-tic}sec")
-        mfcc_scaled = np.mean(mfccs.T, axis=2)
+        mfcc_scaled = np.mean(mfccs, axis=2)
         input_data = np.reshape(mfcc_scaled, (1, 40, 1))
         print(f"\tinput data preparation: {time.time()-tac}sec")
         prediction = self.model.predict(input_data)
         tok = time.time()
         print(f"\tProcessing Time: {tok-tic}sec")
-        self.processingTime.append(",".join(map(str, [tic, tac, tok, tac-tic, tok-tac, tok-tic])))
+        self.processingTime.append([tic, tac, tok, tac-tic, tok-tac, tok-tic])
         # print(f"Prediction: {prediction['refined']} with {prediction['confidance']*100}% confidence")
 
     def streamCallback(self, indata, frames, time, status):
@@ -108,7 +112,7 @@ class AudioAnalyzer:
                     threading.Thread(target=self.process_audio, args=(audio_data, sample_rate)).start()
                 else:
                     self.process_audio(audio_data, sample_rate)
-            time.sleep(0.1)
+            time.sleep(0.01)
 
 def audio_streamer(chunks, duration, sample_rate):
     # print(f"Processing {len(chunks)} chunks of audio data")
@@ -144,9 +148,12 @@ if __name__ == "__main__":
     while True: 
         if analyzer.audio_queue.empty():
             break
+        
     with open(f"processing_time_{socket.gethostname()}.csv", 'w') as f:
         f.write("Processing Time\n")
         for t in analyzer.processingTime:
+            t = ",".join(map(str, t))
             f.write(f"{t}\n")
-    print(f"Processing time: {np.mean(analyzer.processingTime)} : {np.std(analyzer.processingTime)}")
-
+            
+    dur = [a[-1]for a in analyzer.processingTime]
+    print(f"Processing time: {np.mean(dur)} : {np.std(dur)}")
