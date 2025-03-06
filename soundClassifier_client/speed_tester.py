@@ -89,10 +89,11 @@ class AudioAnalyzer:
         print(mfcc_scaled.shape)
         input_data = np.reshape(mfcc_scaled, (1, 40, 1))
         print(f"\tinput data preparation: {time.time()-tac}sec")
+        tec = time.time()   
         prediction = self.model.predict(input_data)
         tok = time.time()
         print(f"\tProcessing Time: {tok-tic}sec")
-        self.processingTime.append([tic, tac, tok, tac-tic, tok-tac, tok-tic])
+        self.processingTime.append([tic, tac, tec, tok, tac-tic, tec-tac, tok-tec,tok-tic])
 
     def streamCallback(self, indata, frames, time, status):
         self.audio_queue.put(indata.copy())

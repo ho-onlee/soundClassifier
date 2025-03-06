@@ -31,14 +31,17 @@ with open(csv_path, mode='r') as file:
 total_processing_time = []
 mfcc_conversion_time = []
 prediction_time = []
+preprocess_time = []
 for row in data_as_list:
     if len(row) < 3:
         continue
-    mfcc_conversion_time.append(float(row[-3]))
+    mfcc_conversion_time.append(float(row[-4]))
+    preprocess_time.append(float(row[-3]))
     prediction_time.append(float(row[-2]))
     total_processing_time.append( float(row[-1]))
 
 print(f"Total processing time: {sum(total_processing_time)}s")
 print(f"Average processing time: {sum(total_processing_time)/len(total_processing_time)}s, std: {np.std(total_processing_time)}")
+print(f"Average preprocess time: {sum(preprocess_time)/len(preprocess_time)}s, std: {np.std(preprocess_time)}")
 print(f"Average MFCC conversion time: {sum(mfcc_conversion_time)/len(mfcc_conversion_time)}s, std: {np.std(mfcc_conversion_time)}")
-print(f"Average prediction_time time: {sum(prediction_time)/len(prediction_time)}s, std: {np.std(prediction_time)}")
+print(f"Average prediction_time time: {sum(prediction_time)/len(prediction_time)}s, std: {np.std(prediction_time)}, max: {max(prediction_time)}, min: {min(prediction_time)}") 

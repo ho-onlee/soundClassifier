@@ -190,7 +190,7 @@ def build_model(x_train, x_test, y_train, y_test):
     model.add(tf.keras.layers.Input(shape=input_shape))
     model.add(tf.keras.layers.Conv1D(32, 3, padding='same', activation='relu'))
     model.add(tf.keras.layers.MaxPooling1D(pool_size=2))
-    model.add(tf.keras.layers.Dense(32, activation='relu', input_shape=input_shape))
+    model.add(tf.keras.layers.Dense(32, activation='relu'))
     model.add(tf.keras.layers.Dropout(0.25))
     model.add(tf.keras.layers.Conv1D(64, 3, padding='same', activation='relu'))
     model.add(tf.keras.layers.MaxPooling1D(pool_size=2))
