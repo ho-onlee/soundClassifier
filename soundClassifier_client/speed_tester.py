@@ -6,7 +6,6 @@ import numpy as np
 import queue, pathlib
 import socket
 import argparse
-import python_speech_features as psf
 import platform
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
